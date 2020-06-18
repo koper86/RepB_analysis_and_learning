@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import csv
 import sys
 import Levenshtein as lev
@@ -14,16 +16,16 @@ with open('Result.csv', newline='') as csvfile:
         print(hipo_parS_sequence)
         hipo_parS_sequences = hipo_parS_sequence.split(' ')
         flag = False
-        inner_sequence = []
+        confirmed_parS_sequences = []
         for parS in hipo_parS_sequences:
             if len(parS) != 0:
-                # wyciagam srodek z palindromu (N-ki)
+                # wyciagam srodek z palindromu (N-ki) i sprawdzam czy jest odwroconym powtorzeniem
                 inner_parS = Seq(parS[3:7] + parS[9:13])
                 rc_inner_parS = inner_parS.reverse_complement()
                 distance = lev.distance(str(inner_parS).lower(), str(rc_inner_parS).lower())
                 if distance <= int(number_of_mismatches):
                     flag = True
-                    inner_sequence.append(str(inner_parS) + '..' + str(rc_inner_parS))
+                    confirmed_parS_sequences.append(parS)
         if flag:
             with open('Result_filtered_' + number_of_mismatches + '.csv', 'a', newline='') as csvfile:
                 rowwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -32,4 +34,4 @@ with open('Result.csv', newline='') as csvfile:
                     + [row[1]]
                     + [row[2]]
                     + [row[3]]
-                    + [' '.join(inner_sequence)])
+                    + [' '.join(confirmed_parS_sequences)])
